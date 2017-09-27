@@ -102,3 +102,4 @@ LOG*
 CURRENT
 MANIFEST-*
 caffe/cmake-build-debug
+tags

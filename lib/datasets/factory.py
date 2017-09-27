@@ -12,6 +12,7 @@ __sets = {}
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
 from datasets.imagenet import imagenet
+from datasets.nexet import nexet
 import numpy as np
 
 # Set up voc_<year>_<split> using selective search "fast" mode
@@ -39,6 +40,12 @@ for year in ['2015']:
     for split in ['test', 'test-dev']:
         name = 'coco_{}_{}'.format(year, split)
         __sets[name] = (lambda split=split, year=year: coco(split, year))
+
+# Set up nexet_2017_<split>
+for year in ['2017']:
+    for split in ['train', 'test']:
+        name = 'nexet_{}_{}'.format(year, split)
+        __sets[name] = (lambda split=split, year=year: nexet(split, year))
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""
