@@ -48,7 +48,7 @@ LOG="experiments/logs/faster_rcnn_end2end_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
-time ./tools/train_net_multi_gpu.py --gpu 0,1 \
+time ./tools/train_net_multi_gpu.py --gpu ${GPU_ID} \
   --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
   --weights data/imagenet_models/${NET}.v2.caffemodel \
   --imdb ${TRAIN_IMDB} \
@@ -57,7 +57,8 @@ time ./tools/train_net_multi_gpu.py --gpu 0,1 \
   ${EXTRA_ARGS}
 
 set +x
-NET_FINAL=`grep -B 1 "done solving" ${LOG} | grep "Wrote snapshot" | awk '{print $4}'`
+#NET_FINAL=`grep -B 1 "done solving" ${LOG} | grep "Wrote snapshot" | awk '{print $4}'`
+NET_FINAL=`grep "Wrote snapshot" ${LOG} | awk '{print $4}'`
 set -x
 
 time ./tools/test_net.py --gpu ${GPU_ID} \

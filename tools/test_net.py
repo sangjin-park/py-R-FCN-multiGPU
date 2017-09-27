@@ -51,6 +51,8 @@ def parse_args():
                         default=400, type=int)
     parser.add_argument('--rpn_file', dest='rpn_file',
                         default=None, type=str)
+    parser.add_argument('--iters', dest='iters',
+                        default=None, type=int)
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -86,6 +88,8 @@ if __name__ == '__main__':
 
     imdb = get_imdb(args.imdb_name)
     imdb.competition_mode(args.comp_mode)
+    if args.iters:
+        imdb._image_index = imdb._image_index[:args.iters]
 
     if not cfg.TEST.HAS_RPN:
         imdb.set_proposal_method(cfg.TEST.PROPOSAL_METHOD)

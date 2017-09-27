@@ -14,6 +14,7 @@ import os
 
 from caffe.proto import caffe_pb2
 import google.protobuf as pb2
+import google.protobuf.text_format
 from multiprocessing import Process
 
 class SolverWrapper(object):
@@ -156,11 +157,12 @@ def solve(proto, roidb, pretrained_model, gpus, uid, rank, output_dir, max_iter)
     if solver.param.layer_wise_reduce:
         solver.net.after_backward(nccl)
     count = 0
+    iters = min(max_iter, cfg.TRAIN.SNAPSHOT_ITERS)
     while count < max_iter:
-        solver.step(cfg.TRAIN.SNAPSHOT_ITERS)
+        solver.step(iters)
         if rank == 0:
             solverW.snapshot()
-        count = count + cfg.TRAIN.SNAPSHOT_ITERS
+        count = count + iters
 
 def get_training_roidb(imdb):
     """Returns a roidb (Region of Interest database) for use in training."""
