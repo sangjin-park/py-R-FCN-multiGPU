@@ -181,7 +181,7 @@ __C.TEST.AGNOSTIC = False
 # some boxes that are distinct in image space to become identical in feature
 # coordinates. If DEDUP_BOXES > 0, then DEDUP_BOXES is used as the scale factor
 # for identifying duplicate boxes.
-# 1/16 is correct for {Alex,Caffe}Net, VGG_CNN_M_1024, and VGG16
+# 1/16 is correct for {Alex,Caffe}Net, VGG_CNN_M_1024, and VGG16-1label
 __C.DEDUP_BOXES = 1./16.
 
 # Pixel mean values (BGR order) as a (1, 1, 3) array

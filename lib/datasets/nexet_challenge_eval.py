@@ -133,6 +133,7 @@ def eval_detector(ground_truth_boxes_by_img, detector_boxes_by_img, iou_threshol
     for d in detector_boxes_by_img.values():
         all_detected_boxes += d
     all_detected_boxes.sort(reverse=True)
+    # all_detected_boxes = all_detected_boxes[:30]
 
     n_correct_detected_boxes = 0
     n_detected_boxes = 0

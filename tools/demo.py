@@ -31,7 +31,7 @@ CLASSES = ('__background__',
            'motorbike', 'person', 'pottedplant',
            'sheep', 'sofa', 'train', 'tvmonitor')
 
-NETS = {'vgg16': ('VGG16',
+NETS = {'vgg16': ('VGG16-1label',
                   'VGG16_faster_rcnn_final.caffemodel'),
         'zf': ('ZF',
                   'ZF_faster_rcnn_final.caffemodel')}

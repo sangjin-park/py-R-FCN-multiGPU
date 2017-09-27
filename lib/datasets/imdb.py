@@ -8,6 +8,7 @@
 import os
 import os.path as osp
 import PIL
+from tqdm import tqdm
 from utils.cython_bbox import bbox_overlaps
 import numpy as np
 import scipy.sparse
@@ -97,12 +98,12 @@ class imdb(object):
 
     def _get_widths(self):
       return [PIL.Image.open(self.image_path_at(i)).size[0]
-              for i in xrange(self.num_images)]
+              for i in tqdm(xrange(self.num_images))]
 
     def append_flipped_images(self):
         num_images = self.num_images
         widths = self._get_widths()
-        for i in xrange(num_images):
+        for i in tqdm(xrange(num_images)):
             boxes = self.roidb[i]['boxes'].copy()
             oldx1 = boxes[:, 0].copy()
             oldx2 = boxes[:, 2].copy()

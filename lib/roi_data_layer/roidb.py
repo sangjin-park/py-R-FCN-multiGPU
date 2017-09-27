@@ -8,6 +8,8 @@
 """Transform a roidb into a trainable roidb by adding a bunch of metadata."""
 
 import numpy as np
+from tqdm import tqdm
+
 from fast_rcnn.config import cfg
 from fast_rcnn.bbox_transform import bbox_transform
 from utils.cython_bbox import bbox_overlaps
@@ -22,9 +24,9 @@ def prepare_roidb(imdb):
     recorded.
     """
     sizes = [PIL.Image.open(imdb.image_path_at(i)).size
-             for i in xrange(imdb.num_images)]
+             for i in tqdm(xrange(imdb.num_images))]
     roidb = imdb.roidb
-    for i in xrange(len(imdb.image_index)):
+    for i in tqdm(xrange(len(imdb.image_index))):
         roidb[i]['image'] = imdb.image_path_at(i)
         roidb[i]['width'] = sizes[i][0]
         roidb[i]['height'] = sizes[i][1]
