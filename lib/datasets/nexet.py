@@ -137,10 +137,10 @@ class nexet(imdb):
             # Load object boundinng boxes into a data frame.
             for ix, obj in enumerate(objs):
                 # TODO : Make pixel indexes 0-based ?
-                x1 = float(obj[1]) - 1
-                y1 = float(obj[2]) - 1
-                x2 = float(obj[3]) - 1
-                y2 = float(obj[4]) - 1
+                x1 = min(float(obj[1]), 1279)
+                y1 = min(float(obj[2]), 719)
+                x2 = min(float(obj[3]), 1279)
+                y2 = min(float(obj[4]), 719)
                 cls = self._class_to_ind[obj[5].lower().strip()] if not self._integrate_classes else self._class_to_ind["vehicle"]
                 boxes[ix, :] = [x1, y1, x2, y2]
                 gt_classes[ix] = cls
@@ -159,40 +159,6 @@ class nexet(imdb):
         print("Wrote gt roidb to {}".format(cache_file))
 
         return gt_roidb
-
-    def _load_nexet_annotation(self, index):
-        """
-        Load image and bounding boxes info from csv file in the nexet format.
-        :param index:
-        :return:
-        """
-        filename = os.path.join(self._data_path, "train_boxes.csv")
-        with open(filename) as f:
-            objs = [x.split(",") for x in f.readlines()[1:] if x.split(",")[0].strip().__eq__(index)]
-        num_objs = len(objs)
-
-        boxes = np.zeros((num_objs, 4), dtype=np.uint16)
-        gt_classes = np.zeros((num_objs), dtype=np.int32)
-        overlaps = np.zeros((num_objs, self.num_classes), dtype=np.float32)
-
-        # Load object boundinng boxes into a data frame.
-        for ix, obj in enumerate(objs):
-            # TODO : Make pixel indexes 0-based ?
-            x1 = float(obj[1]) - 1
-            y1 = float(obj[2]) - 1
-            x2 = float(obj[3]) - 1
-            y2 = float(obj[4]) - 1
-            cls = self._class_to_ind[obj[5].lower().strip()] if not self._integrate_classes else self._class_to_ind["vehicle"]
-            boxes[ix, :] = [x1, y1, x2, y2]
-            gt_classes[ix] = cls
-            overlaps[ix, cls] = 1.0
-
-        overlaps = scipy.sparse.csr_matrix(overlaps)
-
-        return {"boxes": boxes,
-                "gt_classes": gt_classes,
-                'flipped': False,
-                "gt_overlaps": overlaps}
 
     def _get_nexet_results_file_template(self):
         filename = "dt.csv"
@@ -217,7 +183,7 @@ class nexet(imdb):
                         for k in range(dets.shape[0]):
                             f.write('{:s},{:.1f},{:.1f},{:.1f},{:.1f},{:s},{:.3f}\n'.
                                     format(index,
-                                           dets[k, 0] + 1, dets[k, 1] + 1, dets[k, 2] + 1, dets[k, 3] + 1,
+                                           dets[k, 0] , dets[k, 1] , dets[k, 2] , dets[k, 3] ,
                                            cls,
                                            dets[k, -1]))
         # Only label VEHICLE
@@ -236,7 +202,7 @@ class nexet(imdb):
                         for k in range(dets.shape[0]):
                             f.write('{:s},{:.1f},{:.1f},{:.1f},{:.1f},{:s},{:.3f}\n'.
                                     format(index,
-                                           dets[k, 0] + 1, dets[k, 1] + 1, dets[k, 2] + 1, dets[k, 3] + 1,
+                                           dets[k, 0] , dets[k, 1] , dets[k, 2] , dets[k, 3] ,
                                            "vehicle",
                                            dets[k, -1]))
 
