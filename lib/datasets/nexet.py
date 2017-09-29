@@ -75,11 +75,20 @@ class nexet(imdb):
         Load the indexes listed in this dataset's image set file.
         :return:
         """
-        image_set_file = os.path.join(self._data_path, "train.csv")
+        # image_set_file = os.path.join(self._data_path, "train.csv")
+        image_set_file = os.path.join(self._data_path, "train_boxes.csv")
+
         assert os.path.exists(image_set_file), "Path does not exist: {}".format(image_set_file)
+
+        images = {}
         with open(image_set_file) as f:
-            image_index = [x.split(",")[0].strip() for x in f.readlines()[1:]]
-        return image_index   # Total 49282 images
+            header = True
+            for x in f:
+                if header:
+                    header = False
+                    continue
+                images[x.split(',')[0]] = True
+        return images.keys()
 
     def gt_roidb(self):
         """
@@ -145,7 +154,6 @@ class nexet(imdb):
                     "gt_overlaps": overlaps})
 
 
-        # gt_roidb = [self._load_nexet_annotation(idx) for idx in self.image_index]
         with open(cache_file, "wb") as fid:
             pickle.dump(gt_roidb, fid, pickle.HIGHEST_PROTOCOL)
         print("Wrote gt roidb to {}".format(cache_file))
@@ -250,7 +258,7 @@ class nexet(imdb):
         annopath = os.path.join(self._data_path, "train_boxes.csv")
         resultpath = self._get_nexet_results_file_template()
         result_mAP = datasets.nexet_challenge_eval.evaluation(annopath, resultpath)
-        print(result_mAP)
+        print('mAP',result_mAP)
 
 
 if __name__ == '__main__':
