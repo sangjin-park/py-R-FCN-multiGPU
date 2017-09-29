@@ -124,8 +124,13 @@ def eval_detector_csv(gt_csv_file, detector_csv_file, iou_threshold):
     return eval_detector(ground_truth_boxes_by_img, detector_boxes_by_img, iou_threshold)
 
 
-def eval_detector(ground_truth_boxes_by_img, detector_boxes_by_img, iou_threshold):
+def eval_detector(ground_truth_boxes_by_img_, detector_boxes_by_img, iou_threshold):
     n_ground_truth_boxes = 0
+
+    ground_truth_boxes_by_img = {}
+    for key in detector_boxes_by_img:
+        ground_truth_boxes_by_img[key] = ground_truth_boxes_by_img_[key]
+
     for img in ground_truth_boxes_by_img:
         n_ground_truth_boxes += len(ground_truth_boxes_by_img[img])
 

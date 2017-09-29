@@ -168,43 +168,23 @@ class nexet(imdb):
     def _write_nexet_result_file(self, all_boxes):
         filename = self._get_nexet_results_file_template()
         # classify each 5 vehicle types
-        if not self._integrate_classes:
-            with open(filename, 'wt') as f:
-                f.write("image_filename,x0,y0,x1,y1,label,confidence\n")
-                for cls_ind, cls in enumerate(self.classes):
-                    if cls == "__background__":
+        with open(filename, 'wt') as f:
+            f.write("image_filename,x0,y0,x1,y1,label,confidence\n")
+            for cls_ind, cls in enumerate(self.classes):
+                if cls == "__background__":
+                    continue
+                print("Writing nexet results file ({:s})".format(cls))
+                for im_ind, index in enumerate(self.image_index):
+                    dets = all_boxes[cls_ind][im_ind]
+                    if dets == []:
                         continue
-                    print("Writing nexet results file ({:s})".format(cls))
-                    for im_ind, index in enumerate(self.image_index):
-                        dets = all_boxes[cls_ind][im_ind]
-                        if dets == []:
+                    # TODO : the VOCdevkit expects 1-based indices ?
+                    for k in range(dets.shape[0]):
                             continue
-                        # TODO : the VOCdevkit expects 1-based indices ?
-                        for k in range(dets.shape[0]):
-                            f.write('{:s},{:.1f},{:.1f},{:.1f},{:.1f},{:s},{:.3f}\n'.
-                                    format(index,
-                                           dets[k, 0] , dets[k, 1] , dets[k, 2] , dets[k, 3] ,
-                                           cls,
-                                           dets[k, -1]))
-        # Only label VEHICLE
-        else:
-            with open(filename, 'wt') as f:
-                f.write("image_filename,x0,y0,x1,y1,label,confidence\n")
-                for cls_ind, cls in enumerate(self.classes):
-                    if cls == "__background__":
-                        continue
-                    print("Writing nexet results file")
-                    for im_ind, index in enumerate(self.image_index):
-                        dets = all_boxes[cls_ind][im_ind]
-                        if dets == []:
-                            continue
-                        # TODO : the VOCdevkit expects 1-based indices ?
-                        for k in range(dets.shape[0]):
-                            f.write('{:s},{:.1f},{:.1f},{:.1f},{:.1f},{:s},{:.3f}\n'.
-                                    format(index,
-                                           dets[k, 0] , dets[k, 1] , dets[k, 2] , dets[k, 3] ,
-                                           "vehicle",
-                                           dets[k, -1]))
+                        f.write('{:s},{:.1f},{:.1f},{:.1f},{:.1f},{:s},{:.3f}\n'.
+                                format(index,
+                                       dets[k, 0], dets[k, 1], dets[k, 2], dets[k, 3],
+                                       cls, dets[k, -1]))
 
     def evaluate_detections(self, all_boxes, output_dir):
         self._write_nexet_result_file(all_boxes)
