@@ -180,7 +180,6 @@ class nexet(imdb):
                         continue
                     # TODO : the VOCdevkit expects 1-based indices ?
                     for k in range(dets.shape[0]):
-                            continue
                         f.write('{:s},{:.1f},{:.1f},{:.1f},{:.1f},{:s},{:.3f}\n'.
                                 format(index,
                                        dets[k, 0], dets[k, 1], dets[k, 2], dets[k, 3],
