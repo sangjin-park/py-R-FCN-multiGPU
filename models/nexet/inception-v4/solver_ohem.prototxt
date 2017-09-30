@@ -1,0 +1,16 @@
+train_net: "models/nexet/inception-v4/rfcn_nexet_inception-v4-merge-aligned-ohem.prototxt"
+base_lr: 0.001
+lr_policy: "step"
+gamma: 0.1
+stepsize: 80000
+display: 20
+
+momentum: 0.9
+weight_decay: 0.0001
+# We disable standard caffe solver snapshotting and implement our own snapshot
+# function
+snapshot: 0
+# We still use the snapshot prefix, though
+snapshot_prefix: "rfcn_nexet_inception-v4"
+iter_size: 1
+# debug_info: true

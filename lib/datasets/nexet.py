@@ -7,6 +7,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import hashlib
 from collections import defaultdict
 
 from datasets.imdb import imdb
@@ -25,7 +26,8 @@ import uuid
 
 
 class nexet(imdb):
-    def __init__(self, image_set, year, integrate_classes=True):
+    def __init__(self, image_set, year, integrate_classes=True, args=None):
+        self.args = args
         name = 'nexet_' + year + '_' + image_set
         if image_set == "train":
             if integrate_classes:
@@ -76,19 +78,30 @@ class nexet(imdb):
         :return:
         """
         # image_set_file = os.path.join(self._data_path, "train.csv")
-        image_set_file = os.path.join(self._data_path, "train_boxes.csv")
+        if self._image_set == 'train':
+            image_set_file = os.path.join(self._data_path, "train_boxes.csv")
 
-        assert os.path.exists(image_set_file), "Path does not exist: {}".format(image_set_file)
+            assert os.path.exists(image_set_file), "Path does not exist: {}".format(image_set_file)
 
-        images = {}
-        with open(image_set_file) as f:
-            header = True
-            for x in f:
-                if header:
-                    header = False
-                    continue
-                images[x.split(',')[0]] = True
-        return images.keys()
+            images = {}
+            with open(image_set_file) as f:
+                header = True
+                for x in f:
+                    if header:
+                        header = False
+                        continue
+                    images[x.split(',')[0]] = True
+            return images.keys()
+        elif self._image_set == 'test':
+            image_path = os.path.join(self._data_path, "images")
+            if self.args.cluster > 0:
+                files = [f for f in os.listdir(image_path) if f.endswith('.jpg')
+                         and int(hashlib.sha1(f).hexdigest(), 16) % self.args.cluster == self.args.gpu_id]
+            else:
+                files = [f for f in os.listdir(image_path) if f.endswith('.jpg')]
+            return files
+        else:
+            assert(False)
 
     def gt_roidb(self):
         """
@@ -161,7 +174,10 @@ class nexet(imdb):
         return gt_roidb
 
     def _get_nexet_results_file_template(self):
-        filename = "dt.csv"
+        if self._image_set == 'test' and self.args.cluster > 0:
+            filename = "dt-{}-{}.csv".format(self.args.gpu_id, self.args.cluster)
+        else:
+            filename = "dt.csv"
         path = os.path.join(self._data_path, filename)
         return path
 
@@ -169,7 +185,8 @@ class nexet(imdb):
         filename = self._get_nexet_results_file_template()
         # classify each 5 vehicle types
         with open(filename, 'wt') as f:
-            f.write("image_filename,x0,y0,x1,y1,label,confidence\n")
+            if self.args == None or (self.args.gpu_id == 0 or self.args.cluster == 0):
+                f.write("image_filename,x0,y0,x1,y1,label,confidence\n")
             for cls_ind, cls in enumerate(self.classes):
                 if cls == "__background__":
                     continue

@@ -45,13 +45,19 @@ for year in ['2015']:
 for year in ['2017']:
     for split in ['train', 'test']:
         name = 'nexet_{}_{}'.format(year, split)
-        __sets[name] = (lambda split=split, year=year: nexet(split, year))
+        __sets[name] = (lambda args=None, split=split, year=year: nexet(split, year, args=args))
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""
     if not __sets.has_key(name):
         raise KeyError('Unknown dataset: {}'.format(name))
     return __sets[name]()
+
+def get_imdb2(name, args):
+    """Get an imdb (image database) by name."""
+    if not __sets.has_key(name):
+        raise KeyError('Unknown dataset: {}'.format(name))
+    return __sets[name](args=args)
 
 def list_imdbs():
     """List all registered imdbs."""

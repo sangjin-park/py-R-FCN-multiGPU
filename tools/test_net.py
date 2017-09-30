@@ -12,7 +12,7 @@
 import _init_paths
 from fast_rcnn.test import test_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list
-from datasets.factory import get_imdb
+from datasets.factory import get_imdb, get_imdb2
 import caffe
 import argparse
 import pprint
@@ -53,6 +53,8 @@ def parse_args():
                         default=None, type=str)
     parser.add_argument('--iters', dest='iters',
                         default=None, type=int)
+    parser.add_argument('--cluster', dest='cluster',
+                        default=0, type=int)
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -86,7 +88,10 @@ if __name__ == '__main__':
     net = caffe.Net(args.prototxt, args.caffemodel, caffe.TEST)
     net.name = os.path.splitext(os.path.basename(args.caffemodel))[0]
 
-    imdb = get_imdb(args.imdb_name)
+    if args.cluster:
+        imdb = get_imdb2(args.imdb_name, args)
+    else:
+        imdb = get_imdb(args.imdb_name)
     imdb.competition_mode(args.comp_mode)
     if args.iters:
         imdb._image_index = imdb._image_index[:args.iters]
